@@ -1,0 +1,120 @@
+Enrique Martinez de la Cruz 2009308
+Actividad 5
+
+Procesamiento de conjuntos de datos en Python
+
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+#aqui estamos importando las librerías que usaremos en este archivo de colab
+-----------------------------------------------
+from google.colab import files
+
+from google.colab import drive
+drive.mount('/content/drive')
+# aquí estamos enlazando la carpeta de google drive donde tengo la base de datos y Google colab
+--------------------------------------------------------------------------------
+import pandas as pd
+df = pd.read_csv("/content/drive/MyDrive/Bases_Datos google_Colab/Actividad_5/robot_sensors.csv")
+df.shape
+
+# Este comando imprime el tamaño de los datos  diciendo primero el numero de filas y después el numero de columnas
+--------------------------------------------------------------------------------------------------------------
+
+df.head(9)
+#Este comando imprime las primeras 9 filas con los nombres de cabecera de cada columna
+-----------------------------------------------------------------------------------------------
+df_filtered=df.dropna()
+df_filtered.shape
+#aqui se estan imprimiendo los datos despues de eliminar las
+#celdas que tenian un 0
+----------------------------------------------------------------------------------------------
+condition = (df_filtered < 0).any(axis=1)
+df_filtered = df_filtered.drop(df_filtered[condition].index)
+# y aqui se eliminaron las que tenian valores negativos aunque al parecer no existían ya que al imprimirlos el numero de filas no cambia su valor
+
+print(df_filtered.shape)
+
+-------------------------------------------------------------------------------------------
+!pip install scikit-learn
+#Aquí estamos instalando una librería para poder usar la función de normmalizar valores
+-------------------------------------------------------------------------------------------
+from sklearn.preprocessing import StandardScaler
+
+scaler = StandardScaler()
+df_scaled = scaler.fit_transform(df_filtered)
+df_scaled = pd.DataFrame(df_scaled, columns=df_filtered.columns, index=df_filtered.index)
+
+print(df_scaled.head())
+#aqui hacemos la normalización de valores y luego imprimimos unas filas
+----------------------------------------------------------------------------------------------
+import matplotlib.pyplot as plt
+import numpy as np
+
+
+
+# Calcular los picos (crestas)
+x = df_filtered['Tiempo (s)'].values
+y = df_filtered['Velocidad (cm/s)'].values
+picos_indices = np.where((y[1:-1] > y[:-2]) & (y[1:-1] > y[2:]))[0] + 1  # Indices de los picos
+picos_x = x[picos_indices]
+picos_y = y[picos_indices]
+
+# Graficar
+plt.figure(figsize=(10, 6))
+plt.plot(df_filtered['Tiempo (s)'], df_filtered['Velocidad (cm/s)'], label='Velocidad')  # Agregar label para la leyenda
+plt.plot(picos_x, picos_y, 'b^', markersize=8, label='Picos')  # Marcar los picos con triángulos azules
+plt.title('Gráfica de Tiempo vs. Velocidad')
+plt.xlabel('Tiempo (s)')
+plt.ylabel('Velocidad (cm/s)')
+plt.grid(True)
+plt.legend()  # Mostrar la leyenda
+plt.show()
+
+#aqui estamos imprimiendo la primera grafica de velocidad vs tiempo
+------------------------------------------------------------------------------------------------------------
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Calcular los picos (crestas) - Ahora para Temperatura
+x = df_filtered['Tiempo (s)'].values
+y = df_filtered['Temperatura (°C)'].values  # Cambiamos 'Velocidad (cm/s)' por 'Temperatura (°C)'
+picos_indices = np.where((y[1:-1] > y[:-2]) & (y[1:-1] > y[2:]))[0] + 1  # Indices de los picos
+picos_x = x[picos_indices]
+picos_y = y[picos_indices]
+
+# Graficar
+plt.figure(figsize=(10, 6))
+plt.plot(df_filtered['Tiempo (s)'], df_filtered['Temperatura (°C)'], label='Temperatura')  # Cambiamos 'Velocidad (cm/s)' por 'Temperatura (°C)'
+plt.plot(picos_x, picos_y, 'b^', markersize=8, label='Picos')  # Marcar los picos con triángulos azules
+plt.title('Gráfica de Tiempo vs. Temperatura')
+plt.xlabel('Tiempo (s)')
+plt.ylabel('Temperatura (°C)')  # Cambiamos la etiqueta del eje y
+plt.grid(True)
+plt.legend()  # Mostrar la leyenda
+plt.show()
+# esta es a grafica de temperatura vs tiempo
+---------------------------------------------------------------------------------
+import matplotlib.pyplot as plt
+import numpy as np
+
+
+
+# Calculate the peaks (crests) - Now for Distance
+x = df_filtered['Tiempo (s)'].values
+y = df_filtered['Distancia (cm)'].values  # Changed to 'Distancia (cm)'
+picos_indices = np.where((y[1:-1] > y[:-2]) & (y[1:-1] > y[2:]))[0] + 1  # Indices of the peaks
+picos_x = x[picos_indices]
+picos_y = y[picos_indices]
+
+# Plot
+plt.figure(figsize=(10, 6))
+plt.plot(df_filtered['Tiempo (s)'], df_filtered['Distancia (cm)'], label='Distancia')  # Changed to 'Distancia (cm)'
+plt.plot(picos_x, picos_y, 'b^', markersize=8, label='Picos')  # Mark peaks with blue triangles
+plt.title('Gráfica de Tiempo vs. Distancia')
+plt.xlabel('Tiempo (s)')
+plt.ylabel('Distancia (cm)')  # Changed y-axis label
+plt.grid(True)
+plt.legend()  # Show legend
+plt.show()
+# y ya por ultimo estas son las graficas de distancia vs tiempo
